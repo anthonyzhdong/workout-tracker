@@ -6,6 +6,8 @@ const WorkoutForm = () => {
     weight: '',
     reps: ''
   });
+  
+  const [exerciseList, setExerciseList] = useState([]);
 
   const exercises = [
     'Bench Press', 'Squat', 'Deadlift', 'Overhead Press', 'Pull-Ups', 'Dumbbell Rows',
@@ -20,19 +22,33 @@ const WorkoutForm = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleAddExercise = (e) => {
     e.preventDefault();
-    console.log('Workout data:', workoutData);
-    setWorkoutData({
-      exercise: '',
-      weight: '',
-      reps: ''
-    });
+    if (workoutData.exercise && workoutData.weight && workoutData.reps) {
+      setExerciseList(prev => [...prev, { ...workoutData, id: Date.now() }]);
+      // id = date but should change to workout ID
+      // eventually turns into user ID and workout ID
+      setWorkoutData({
+        exercise: '',
+        weight: '',
+        reps: ''
+      });
+    }
+  };
+
+  const handleRemoveExercise = (id) => {
+    setExerciseList(prev => prev.filter(exercise => exercise.id !== id));
+  };
+
+  const handleSubmitWorkout = (e) => {
+    e.preventDefault();
+    console.log('Complete workout:', exerciseList);
+    setExerciseList([]);
   };
 
   return (
-    <div className="max-w-md mx-auto bg-white p-8 rounded-xl shadow-lg">
-      <form onSubmit={handleSubmit} className="space-y-6">
+    <div className="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-lg">
+      <form onSubmit={handleAddExercise} className="space-y-6 mb-8">
         <div className="flex flex-col gap-2">
           <label className="text-sm font-medium text-blue-700">Exercise</label>
           <select
@@ -48,37 +64,74 @@ const WorkoutForm = () => {
           </select>
         </div>
 
-        <div className="flex flex-col gap-2">
-          <label className="text-sm font-medium text-gray-700">Weight (lbs)</label>
-          <input
-            type="number"
-            name="weight"
-            value={workoutData.weight}
-            onChange={handleChange}
-            className="w-full rounded-lg border border-gray-300 p-3 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
-            placeholder="135"
-          />
-        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium text-gray-700">Weight (kgs)</label>
+            <input
+              type="number"
+              name="weight"
+              value={workoutData.weight}
+              onChange={handleChange}
+              className="w-full rounded-lg border border-gray-300 p-3 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
+              placeholder="135"
+            />
+          </div>
 
-        <div className="flex flex-col gap-2">
-          <label className="text-sm font-medium text-gray-700">Reps</label>
-          <input
-            type="number"
-            name="reps"
-            value={workoutData.reps}
-            onChange={handleChange}
-            className="w-full rounded-lg border border-gray-300 p-3 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
-            placeholder="8"
-          />
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium text-gray-700">Reps</label>
+            <input
+              type="number"
+              name="reps"
+              value={workoutData.reps}
+              onChange={handleChange}
+              className="w-full rounded-lg border border-gray-300 p-3 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
+              placeholder="8"
+            />
+          </div>
         </div>
 
         <button
           type="submit"
           className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition-all shadow-md"
         >
-          Log Exercise
+          Add Exercise
         </button>
       </form>
+
+      {exerciseList.length > 0 && (
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold text-gray-800">Added Exercises:</h3>
+          <div className="space-y-3">
+            {exerciseList.map((exercise) => (
+              <div
+                key={exercise.id}
+                className="flex items-center justify-between bg-gray-50 p-4 rounded-lg"
+              >
+                <div className="flex-1">
+                  <p className="font-medium text-gray-800">{exercise.exercise}</p>
+                  <p className="text-sm text-gray-600">
+                    {exercise.weight}kg × {exercise.reps} reps
+                  </p>
+                </div>
+                <button
+                  onClick={() => handleRemoveExercise(exercise.id)}
+                  className="px-3 py-1 text-sm text-red-500 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors"
+                  type="button"
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
+          </div>
+
+          <button
+            onClick={handleSubmitWorkout}
+            className="w-full mt-6 bg-green-500 text-white py-3 rounded-lg hover:bg-green-600 transition-all shadow-md"
+          >
+            Complete Workout
+          </button>
+        </div>
+      )}
     </div>
   );
 };
