@@ -13,28 +13,75 @@ const WorkoutForm = () => {
     'Bench Press', 'Squat', 'Deadlift', 'Overhead Press', 'Pull-Ups', 'Dumbbell Rows',
     'Bicep Curls', 'Tricep Dips', 'Lunges', 'Leg Press'
   ];
+  const [errors, setErrors] = useState({
+    weight: '',
+    reps: ''
+  });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setWorkoutData(prev => ({
+    
+    // Clear error when user starts typing
+    setErrors(prev => ({
       ...prev,
-      [name]: value
+      [name]: ''
     }));
+    
+    // For number inputs, remove any '+' or '-' signs and validate
+    if (name === 'weight' || name === 'reps') {
+      const sanitizedValue = value.replace(/[+-]/g, '');
+      if (sanitizedValue === '' || Number(sanitizedValue) > 0) {
+        setWorkoutData(prev => ({
+          ...prev,
+          [name]: sanitizedValue
+        }));
+      }
+    } else {
+      setWorkoutData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
+  };
+
+  const validateField = (name, value) => {
+
+    if(name === 'weight' || name === 'reps') {
+      const numValue = Number(value);
+      if(numValue <= 0){
+        return `${name.charAt(0).toUpperCase() + name.slice(1)} value must be greater than 0`;
+      }
+    }
+
   };
 
   const handleAddExercise = (e) => {
     e.preventDefault();
-    if (workoutData.exercise && workoutData.weight && workoutData.reps) {
+    
+    // Validate all fields
+    const newErrors = {
+      weight: validateField('weight', workoutData.weight),
+      reps: validateField('reps', workoutData.reps)
+    };
+
+    setErrors(newErrors);
+
+    // Check if there are any errors
+    if (!Object.values(newErrors).some(error => error) && 
+        workoutData.exercise && workoutData.weight && workoutData.reps) {
       setExerciseList(prev => [...prev, { ...workoutData, id: Date.now() }]);
-      // id = date but should change to workout ID
-      // eventually turns into user ID and workout ID
       setWorkoutData({
         exercise: '',
         weight: '',
         reps: ''
       });
+      setErrors({
+        weight: '',
+        reps: ''
+      });
     }
-  };
+  }
+  
 
   const handleRemoveExercise = (id) => {
     setExerciseList(prev => prev.filter(exercise => exercise.id !== id));
