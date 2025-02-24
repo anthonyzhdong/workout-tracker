@@ -103,19 +103,20 @@ const WorkoutForm = () => {
           </select>
         </div>
 
-        <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h3 className="text-md font-medium text-gray-700">Sets</h3>
-            <button
-              type="button"
-              onClick={addSet}
-              className="text-sm bg-blue-100 text-blue-700 px-3 py-1 rounded-md hover:bg-blue-200 transition-colors"
-            >
-              Add Set
-            </button>
-          </div>
+        {currentExercise.name && (
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <h3 className="text-md font-medium text-gray-700">Sets</h3>
+              <button
+                type="button"
+                onClick={addSet}
+                className="text-sm bg-blue-100 text-blue-700 px-3 py-1 rounded-md hover:bg-blue-200 transition-colors"
+              >
+                Add Set
+              </button>
+            </div>
 
-          {currentExercise.sets.map((set, index) => (
+            {currentExercise.sets.map((set, index) => (
             <div key={index} className="flex items-end gap-4 p-4 bg-gray-50 rounded-lg">
               <div className="flex-1">
                 <div className="text-sm font-medium text-gray-600 mb-2">Set {index + 1}</div>
@@ -169,14 +170,17 @@ const WorkoutForm = () => {
               )}
             </div>
           ))}
-        </div>
+          </div>
+        )}
 
-        <button
-          type="submit"
-          className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition-all shadow-md"
-        >
-          Add Exercise
-        </button>
+        {currentExercise.name && (
+          <button
+            type="submit"
+            className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition-all shadow-md"
+          >
+            Add Exercise
+          </button>
+        )}
       </form>
 
       {exerciseList.length > 0 && (
